@@ -1,23 +1,14 @@
-# Start with a .NET Core SDK image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+# Base image
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the project file and restore dependencies
-COPY *.csproj ./
-RUN dotnet restore
+# Copy the application files
+COPY bin/Release/* ./
 
-# Copy the rest of the application code
-COPY . ./
+# Expose the port for the application
+EXPOSE 80
 
-# Build the application
-RUN dotnet publish -c Release -o out
-
-# Use a .NET Core runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
-WORKDIR /app
-COPY --from=build-env /app/out ./
-
-# Start the application
-ENTRYPOINT ["dotnet", "changes-characters-from-turkish-to-english.dll"]
+# Set the entry point for the application
+ENTRYPOINT ["MyApplication.exe"]
